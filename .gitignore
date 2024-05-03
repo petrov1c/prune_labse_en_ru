@@ -1,5 +1,4 @@
-/config/config.yml
-data/1mcorpus
+/data/
 
 experiments
 lightning_logs
@@ -8,4 +7,6 @@ lightning_logs
 src/__pycache__
 __pycache__
 
-TODO.md
+/TODO.md
+/sandbox.py
+
