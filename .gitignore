@@ -1,0 +1,11 @@
+/config/config.yml
+data/1mcorpus
+
+experiments
+lightning_logs
+.ipynb_checkpoints
+.idea
+src/__pycache__
+__pycache__
+
+TODO.md
