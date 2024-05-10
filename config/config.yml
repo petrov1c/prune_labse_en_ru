@@ -5,13 +5,14 @@ accelerator: 'gpu'
 device: 0
 monitor_metric: 'val_mse'
 monitor_mode: 'min'
+debug: True
 
 model_name: 'cointegrated/LaBSE-en-ru'
 
 pruning:
   pruning_ratio: 0.75
   global_pruning: False
-  iterative_steps: 5
+  iterative_steps: 1
 
 optimizer: 'torch.optim.AdamW'
 optimizer_kwargs:

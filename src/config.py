@@ -7,6 +7,7 @@ from pydantic import BaseModel
 class PruningConfig(BaseModel):
     pruning_ratio: float
     global_pruning: bool
+    iterative_steps: int
 
 
 class LossConfig(BaseModel):
@@ -32,7 +33,8 @@ class Config(BaseModel):
     device: int
     monitor_metric: str
     monitor_mode: str
-    model_kwargs: dict
+    debug: bool = False
+    model_name: str
     pruning: PruningConfig
     optimizer: str
     optimizer_kwargs: dict
