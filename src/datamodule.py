@@ -41,7 +41,6 @@ class SentenceDM(LightningDataModule):
             batch_size=self.cfg.batch_size,
             num_workers=self.cfg.n_workers,
             shuffle=True,
-            pin_memory=True,
             drop_last=False,
         )
 
@@ -51,7 +50,6 @@ class SentenceDM(LightningDataModule):
             batch_size=self.cfg.batch_size,
             num_workers=self.cfg.n_workers,
             shuffle=False,
-            pin_memory=True,
             drop_last=False,
         )
 
@@ -61,7 +59,6 @@ class SentenceDM(LightningDataModule):
             batch_size=self.cfg.batch_size,
             num_workers=self.cfg.n_workers,
             shuffle=False,
-            pin_memory=True,
             drop_last=False,
         )
 
