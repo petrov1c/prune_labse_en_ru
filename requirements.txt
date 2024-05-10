@@ -1,0 +1,14 @@
+numpy
+pandas
+
+torch
+
+clearml
+omegaconf
+pydantic
+torchmetrics
+
+scikit-learn
+tqdm
+transformers
+pillow
