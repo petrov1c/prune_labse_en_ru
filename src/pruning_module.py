@@ -18,7 +18,7 @@ def prune_model(lightning_module: PruneModule, datamodule: SentenceDM):
 
     input_example = torch.randint(
         high=model.embeddings.word_embeddings.num_embeddings,
-        size=(datamodule.cfg.batch_size, model.embeddings.position_embeddings.num_embeddings),
+        size=(datamodule.cfg.batch_size, lightning_module.max_length),
         device=device,
     )
 
