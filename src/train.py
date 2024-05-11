@@ -2,6 +2,7 @@ import argparse
 import logging
 import os
 
+import torch
 import pytorch_lightning as pl
 from clearml import OutputModel, Task
 from pytorch_lightning.callbacks import EarlyStopping, LearningRateMonitor, ModelCheckpoint
@@ -10,6 +11,7 @@ from src.config import Config
 from src.constants import EXPERIMENTS_PATH
 from src.datamodule import SentenceDM
 from src.lightning_module import PruneModule
+from src.pruning_module import prune_model
 
 
 def arg_parse():
@@ -19,16 +21,19 @@ def arg_parse():
 
 
 def train(config: Config):
-    datamodule = SentenceDM(config.data_config)
+    os.environ["TOKENIZERS_PARALLELISM"] = "true"
 
+    datamodule = SentenceDM(config.data_config)
     model = PruneModule(config)
+
+    prune_model(model, datamodule)
 
     task = Task.init(
         project_name=config.project_name,
         task_name=f'{config.experiment_name}',
         auto_connect_frameworks=True,
     )
-    task.connect(config.dict())
+    task.connect(config.model_dump())
 
     experiment_save_path = os.path.join(EXPERIMENTS_PATH, config.experiment_name)
     os.makedirs(experiment_save_path, exist_ok=True)
@@ -68,6 +73,7 @@ if __name__ == '__main__':
     args = arg_parse()
     logging.basicConfig(level=logging.INFO)
 
+    torch.set_float32_matmul_precision('high')
     pl.seed_everything(42, workers=True)
     config = Config.from_yaml(args.config_file)
     train(config)
