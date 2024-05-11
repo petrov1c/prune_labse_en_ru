@@ -1,6 +1,6 @@
 project_name: 'prune-labse-en-ru'
 experiment_name: 'prune-labse-en-ru'
-n_epochs: 40
+n_epochs: 2
 accelerator: 'gpu'
 device: 0
 monitor_metric: 'val_mse'
@@ -26,8 +26,13 @@ scheduler_kwargs:
 
 losses:
   - name: 'mse'
-    weight: 1.0
+    weight: 0.5
     loss_fn: 'torch.nn.MSELoss'
+    loss_kwargs: {}
+
+  - name: 'kl'
+    weight: 0.5
+    loss_fn: 'torch.nn.KLDivLoss'
     loss_kwargs: {}
 
 data_config:
