@@ -34,7 +34,6 @@ class Config(BaseModel):
     device: int
     monitor_metric: str
     monitor_mode: str
-    debug: bool = False
     model_name: str
     pruning: PruningConfig
     optimizer: str

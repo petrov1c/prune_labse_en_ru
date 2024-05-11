@@ -41,9 +41,6 @@ class PruneModule(pl.LightningModule):
                            truncation=True).items()
         }
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return self._model(x)
-
     def configure_optimizers(self):
         optimizer = load_object(self.config.optimizer)(
             self.student_model.parameters(),
@@ -107,10 +104,16 @@ class PruneModule(pl.LightningModule):
         """
         Считаем метрики.
         """
-        images, gt_labels = batch
-        pr_logits = self(images)
-        pr_labels = torch.sigmoid(pr_logits)
-        self._test_metrics(pr_labels, gt_labels)
+        input_text = [text for text in chain(*batch)]
+        inputs = self.tokenize(input_text, self.device)
+
+        teacher_out = self.teacher_model(**inputs)
+        teacher_out = torch.nn.functional.normalize(teacher_out.pooler_output)
+
+        student_out = self.student_model(**inputs)
+        student_out = torch.nn.functional.normalize(student_out.pooler_output)
+
+        self._test_metrics(student_out, teacher_out)
 
     def on_validation_epoch_start(self) -> None:
         self._valid_metrics.reset()

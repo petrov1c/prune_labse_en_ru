@@ -49,9 +49,6 @@ def prune_model(lightning_module: PruneModule, datamodule: SentenceDM):
     model.train()
 
     for idx, (ru, en) in enumerate(tqdm(train_dataloader)):
-        if lightning_module.config.debug and idx > 100:
-            break
-
         inp_ru = lightning_module.tokenize(ru, device)
         inp_en = lightning_module.tokenize(en, device)
 

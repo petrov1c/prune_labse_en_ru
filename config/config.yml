@@ -5,7 +5,6 @@ accelerator: 'gpu'
 device: 0
 monitor_metric: 'val_mse'
 monitor_mode: 'min'
-debug: True
 
 model_name: 'cointegrated/LaBSE-en-ru'
 
