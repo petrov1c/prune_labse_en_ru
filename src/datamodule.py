@@ -16,6 +16,7 @@ class SentenceDM(LightningDataModule):
     def __init__(self, config: DataConfig):
         super().__init__()
         self.cfg = config
+        self.debug = self.cfg.debug
 
         self.train_dataset: Optional[Dataset] = None
         self.valid_dataset: Optional[Dataset] = None
@@ -29,12 +30,12 @@ class SentenceDM(LightningDataModule):
         if stage == 'fit':
             df_train = read_df(self.cfg.data_path, 'train')
             df_valid = read_df(self.cfg.data_path, 'valid')
-            self.train_dataset = SentenceDataset(df_train)
-            self.valid_dataset = SentenceDataset(df_valid)
+            self.train_dataset = SentenceDataset(df_train, self.debug)
+            self.valid_dataset = SentenceDataset(df_valid, self.debug)
 
         elif stage == 'test':
             df_test = read_df(self.cfg.data_path, 'test')
-            self.test_dataset = SentenceDataset(df_test)
+            self.test_dataset = SentenceDataset(df_test, self.debug)
 
     def train_dataloader(self) -> DataLoader:
         return DataLoader(

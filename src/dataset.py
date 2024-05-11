@@ -6,8 +6,9 @@ class SentenceDataset(Dataset):
     def __init__(
         self,
         df: pd.DataFrame,
+        debug: bool = False
     ):
-        self.df = df
+        self.df = df[:1000] if debug else df
 
     def __getitem__(self, idx: int):
         row = self.df.iloc[idx]

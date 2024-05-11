@@ -36,7 +36,8 @@ losses:
     loss_kwargs: {}
 
 data_config:
+  debug: True
   data_path: 'data/'
   batch_size: 16
-  n_workers: 20
+  n_workers: 10
   train_size: 0.8
