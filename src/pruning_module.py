@@ -6,13 +6,14 @@ from transformers.models.bert.modeling_bert import BertSelfAttention
 from src.datamodule import SentenceDM
 from src.lightning_module import PruneModule
 
+from copy import deepcopy
 from tqdm import tqdm
 
 
 def prune_model(lightning_module: PruneModule, datamodule: SentenceDM):
     device = 'cuda' if lightning_module.config.accelerator == 'gpu' else 'cpu'
 
-    model = lightning_module.model
+    model = deepcopy(lightning_module.teacher_model)
     model.to(device)
 
     input_example = torch.randint(
@@ -44,15 +45,15 @@ def prune_model(lightning_module: PruneModule, datamodule: SentenceDM):
     train_dataloader = datamodule.train_dataloader()
 
     mse_loss = torch.nn.MSELoss()
+    model.zero_grad()
     model.train()
+
     for idx, (ru, en) in enumerate(tqdm(train_dataloader)):
         if lightning_module.config.debug and idx > 100:
             break
 
-        inp_ru = {k: v.to(device) for k, v in
-               lightning_module.tokenizer(ru, return_tensors='pt', padding=True, max_length=model.embeddings.position_embeddings.num_embeddings, truncation=True).items()}
-        inp_en = {k: v.to(device) for k, v in
-               lightning_module.tokenizer(en, return_tensors='pt', padding=True, max_length=model.embeddings.position_embeddings.num_embeddings, truncation=True).items()}
+        inp_ru = lightning_module.tokenize(ru, device)
+        inp_en = lightning_module.tokenize(en, device)
 
         ru_out = model(**inp_ru)
         ru_out = torch.nn.functional.normalize(ru_out.pooler_output)
@@ -64,7 +65,6 @@ def prune_model(lightning_module: PruneModule, datamodule: SentenceDM):
         loss.backward()
 
     for step in range(lightning_module.config.pruning.iterative_steps):
-        print('Step {0}'.format(step))
         for i, group in enumerate(pruner.step(interactive=True)):
             group.prune()
 
@@ -72,6 +72,8 @@ def prune_model(lightning_module: PruneModule, datamodule: SentenceDM):
         if isinstance(module, BertSelfAttention):
             module.attention_head_size = module.attention_head_size // 4
             module.all_head_size = module.all_head_size // 4
+
+    lightning_module.student_model = model
 
     ops, params = tp.utils.count_ops_and_params(model, input_example)
     logging.info(f'Model complexity (After taylor pruning): {ops / 1e6} MMAC, {params / 1e6} M params')
