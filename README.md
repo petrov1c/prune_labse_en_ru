@@ -14,21 +14,22 @@
 
 Для обучения используется корпус парных предложений https://translate.yandex.ru/corpus. 
 
-### Подготовка окружения
+### Настройка окружения
 
-1. Создание и активация окружения
+1. Создание
     ```
     python3 -m venv /path/to/new/virtual/environment
-    ```
-    ```
     source /path/to/new/virtual/environment/bin/activate
     ```
 
-2. Установка пакетов
+2. Установка зависимостей
 
-    В активированном окружении:
     ```
     pip install -r requirements.txt
+   
+    git clone https://github.com/avidale/encodechka
+    python encodechka/setup.py install
+    rm -rf encodechka
     ```
 
 3. Настройка ClearML
@@ -47,17 +48,8 @@ make train
    -  Локально в папке **experiments** лежат чекпойнты лучших моделей
    -  В [ClearML](https://app.clear.ml/projects/8a15381deb0d41429e451070a014c1a3)
 
-### Сохранение результатов лучшего экперимента в каталоге моделей
-```
-make save
-```
-
 ### Проверка качества эмбеддингов на бейчмарке encedechka
 ```
-# Запуск в терминале
-make infer
-```
-```
-# Запуск в jupyter
-notebooks/encodechka_evaluation_2024.ipynb 
+make infer - для запуска в терминальном режиме
+notebooks/encodechka_evaluation_2024.ipynb - jupyter блокнот 
 ```
