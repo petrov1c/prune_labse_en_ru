@@ -4,7 +4,7 @@ train:
 
 .PHONY: infer
 infer:
-	PYTHONPATH=. python src/infer.py
+	PYTHONPATH=. python src/evalution.py config/config.yml
 
 .PHONY: save
 save:
