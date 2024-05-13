@@ -6,12 +6,14 @@ device: 0
 monitor_metric: 'val_mse'
 monitor_mode: 'min'
 
-model_name: 'cointegrated/LaBSE-en-ru'
+model:
+  name: 'cointegrated/LaBSE-en-ru'
 
 pruning:
   pruning_ratio: 0.75
   global_pruning: False
   iterative_steps: 1
+  save_model: False
 
 optimizer: 'torch.optim.AdamW'
 optimizer_kwargs:

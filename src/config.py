@@ -4,10 +4,15 @@ from omegaconf import OmegaConf
 from pydantic import BaseModel
 
 
+class ModelConfig(BaseModel):
+    name: str
+
+
 class PruningConfig(BaseModel):
     pruning_ratio: float
     global_pruning: bool
     iterative_steps: int
+    save_model: bool
 
 
 class LossConfig(BaseModel):
@@ -34,7 +39,7 @@ class Config(BaseModel):
     device: int
     monitor_metric: str
     monitor_mode: str
-    model_name: str
+    model: ModelConfig
     pruning: PruningConfig
     optimizer: str
     optimizer_kwargs: dict

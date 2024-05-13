@@ -22,8 +22,8 @@ class PruneModule(pl.LightningModule):
         super().__init__()
         self.config = config
 
-        self.tokenizer = AutoTokenizer.from_pretrained(self.config.model_name)
-        self.teacher_model = AutoModel.from_pretrained(self.config.model_name)
+        self.tokenizer = AutoTokenizer.from_pretrained(self.config.model.name)
+        self.teacher_model = AutoModel.from_pretrained(self.config.model.name)
         self.student_model: Optional[nn.Module] = None
         self.max_length = self.teacher_model.embeddings.position_embeddings.num_embeddings
 

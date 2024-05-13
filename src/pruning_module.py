@@ -13,6 +13,10 @@ from tqdm import tqdm
 def prune_model(lightning_module: PruneModule, datamodule: SentenceDM):
     device = 'cuda' if lightning_module.config.accelerator == 'gpu' else 'cpu'
 
+    if lightning_module.config.pruning.save_model:
+        lightning_module.teacher_model.to('cpu')
+        torch.save(lightning_module.teacher_model, 'models/origin_model.pth')
+
     model = deepcopy(lightning_module.teacher_model)
     model.to(device)
 
@@ -74,3 +78,7 @@ def prune_model(lightning_module: PruneModule, datamodule: SentenceDM):
 
     ops, params = tp.utils.count_ops_and_params(model, input_example)
     logging.info(f'Model complexity (After taylor pruning): {ops / 1e6} MMAC, {params / 1e6} M params')
+
+    if lightning_module.config.pruning.save_model:
+        model.to('cpu')
+        torch.save(model, 'models/prune_model.pth')
