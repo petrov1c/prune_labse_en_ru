@@ -10,14 +10,14 @@ model:
   name: 'cointegrated/LaBSE-en-ru'
 
 pruning:
-  pruning_ratio: 0.75
+  pruning_ratio: 0.5
   global_pruning: False
   iterative_steps: 1
-  save_model: False
+  save_model: True
 
 optimizer: 'torch.optim.AdamW'
 optimizer_kwargs:
-  lr: 3e-4
+  lr: 3e-5
   weight_decay: 1e-5
 
 scheduler: 'torch.optim.lr_scheduler.CosineAnnealingLR'
@@ -37,7 +37,7 @@ losses:
     loss_kwargs: {}
 
 data_config:
-  debug: True
+  debug: False
   data_path: 'data/'
   batch_size: 16
   n_workers: 10
