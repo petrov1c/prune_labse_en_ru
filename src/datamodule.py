@@ -22,6 +22,9 @@ class SentenceDM(LightningDataModule):
         self.valid_dataset: Optional[Dataset] = None
         self.test_dataset: Optional[Dataset] = None
 
+        if config.prepare_data:
+            self.prepare_data()
+
     def prepare_data(self):
         if self.train_dataset is None:
             split_and_save_datasets(self.cfg.data_path, self.cfg.train_size)

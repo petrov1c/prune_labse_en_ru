@@ -1,9 +1,9 @@
 project_name: 'prune-labse-en-ru'
 experiment_name: 'prune-labse-en-ru'
-n_epochs: 2
+n_epochs: 5
 accelerator: 'gpu'
 device: 0
-monitor_metric: 'val_mse'
+monitor_metric: 'val_total_loss'
 monitor_mode: 'min'
 
 model:
@@ -34,11 +34,12 @@ losses:
   - name: 'kl'
     weight: 0.5
     loss_fn: 'torch.nn.KLDivLoss'
-    loss_kwargs: {}
+    loss_kwargs: {'reduction': 'batchmean'}
 
 data_config:
-  debug: False
+  debug: True
+  prepare_data: False
   data_path: 'data/'
   batch_size: 16
   n_workers: 10
-  train_size: 0.8
+  train_size: 0.95

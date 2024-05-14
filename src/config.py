@@ -24,6 +24,7 @@ class LossConfig(BaseModel):
 
 class DataConfig(BaseModel):
     debug: bool = False
+    prepare_data: bool = False
     data_path: str
     batch_size: int
     n_workers: int
