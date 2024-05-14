@@ -65,9 +65,6 @@ def train(config: Config):
     # Сохранение весов модели
     output_model.update_weights(weights_filename=checkpoint_callback.best_model_path, auto_delete_file=False)
 
-    # ONNX версия
-    # task.upload_artifact(name='ONNX model', artifact_object=onnx_checkpoint)
-
 
 if __name__ == '__main__':
     args = arg_parse()
