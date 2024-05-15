@@ -1,23 +1,31 @@
+import argparse
 import logging
 import torch
 from transformers import AutoTokenizer
-
-from src.train import arg_parse
-from src.config import Config
+from importlib import reload
 
 from encodechka_eval import tasks
 from encodechka_eval.bert_embedders import embed_bert_both
 
-from importlib import reload
-reload(tasks)
+from src.config import Config
+
+
+def arg_parse():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('config_file', type=str, help='config file')
+    parser.add_argument('model_name', type=str)
+    return parser.parse_args()
 
 
 def evaluate(model: torch.nn.Module, tokenizer):
+    reload(tasks)
+
     sent_tasks = [TaskClass() for TaskClass in tasks.SENTENCE_TASKS]
     speed_task_cpu = tasks.SpeedTask()
     speed_task_gpu = tasks.SpeedTask()
 
     model_name = model.name_or_path
+    model.eval()
     model.cuda()
     for task in sent_tasks:
         task.eval(lambda x: embed_bert_both(x, model, tokenizer), model_name)
@@ -41,7 +49,7 @@ if __name__ == '__main__':
     config = Config.from_yaml(args.config_file)
 
     tokenizer = AutoTokenizer.from_pretrained(config.model.name)
-    model = torch.load('models/prune_model.pth').cuda()
+    model = torch.load('models/{0}'.format(args.model_name))
 
     scores = evaluate(model, tokenizer)
-    print(scores)
+    logging.info(str(scores))
