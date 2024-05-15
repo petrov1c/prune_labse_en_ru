@@ -6,7 +6,7 @@ class SentenceDataset(Dataset):
     def __init__(
         self,
         df: pd.DataFrame,
-        debug: bool = False
+        debug: bool = False,
     ):
         self.df = df[:5000] if debug else df
 

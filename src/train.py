@@ -21,7 +21,7 @@ def arg_parse():
 
 
 def train(config: Config):
-    os.environ["TOKENIZERS_PARALLELISM"] = "true"
+    os.environ['TOKENIZERS_PARALLELISM'] = 'true'
 
     task = Task.init(
         project_name=config.project_name,
@@ -61,8 +61,6 @@ def train(config: Config):
     trainer.test(ckpt_path=checkpoint_callback.best_model_path, datamodule=datamodule)
 
     output_model = OutputModel(task=task, name='latest')
-
-    # Сохранение весов модели
     output_model.update_weights(weights_filename=checkpoint_callback.best_model_path, auto_delete_file=False)
 
 
