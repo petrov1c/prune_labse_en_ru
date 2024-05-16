@@ -1,6 +1,6 @@
 project_name: 'prune-labse-en-ru'
 experiment_name: 'prune-labse-en-ru'
-n_epochs: 5
+n_epochs: 15
 accelerator: 'gpu'
 device: 0
 monitor_metric: 'val_total_loss'
@@ -17,7 +17,7 @@ pruning:
 
 optimizer: 'torch.optim.AdamW'
 optimizer_kwargs:
-  lr: 3e-5
+  lr: 3e-6
   weight_decay: 1e-5
 
 scheduler: 'torch.optim.lr_scheduler.CosineAnnealingLR'
@@ -37,9 +37,9 @@ losses:
     loss_kwargs: {'reduction': 'batchmean'}
 
 data_config:
-  debug: True
+  debug: False
   prepare_data: False
   data_path: 'data/'
   batch_size: 16
   n_workers: 10
-  train_size: 0.95
+  train_size: 0.98
