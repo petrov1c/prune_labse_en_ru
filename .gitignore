@@ -1,6 +1,7 @@
 /data/
 /models/
 /notebook/
+/sandbox/
 
 experiments
 lightning_logs
@@ -8,6 +9,3 @@ lightning_logs
 .idea
 src/__pycache__
 __pycache__
-
-/TODO.md
-/sandbox.py

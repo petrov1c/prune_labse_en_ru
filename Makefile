@@ -23,4 +23,3 @@ save:
 .PHONY: lint
 lint:
 	flake8 src/*.py
-
