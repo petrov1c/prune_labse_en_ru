@@ -20,14 +20,17 @@ def prune_model(lightning_module: PruneModule, datamodule: SentenceDM):
     train_dataloader = datamodule.train_dataloader()
 
     batch = next(iter(train_dataloader))
-    input_example = lightning_module.tokenize([text for text in chain(*batch)], device)
+    input_example = lightning_module.tokenize(
+        list(text for text in chain(*batch)),
+        device,
+    )
 
     ops, params = tp.utils.count_ops_and_params(model, input_example)
     logging.info(f'Model complexity: {ops / 1e6} MMAC, {params / 1e6} M params')
 
     ignored_layers = []
     for name, module in model.named_modules():
-        if name in ('pooler', 'embeddings'):
+        if name in {'pooler', 'embeddings'}:
             ignored_layers.append(module)
 
     num_heads = {}
@@ -46,7 +49,7 @@ def prune_model(lightning_module: PruneModule, datamodule: SentenceDM):
         global_pruning=lightning_module.config.pruning.global_pruning,
         iterative_steps=lightning_module.config.pruning.iterative_steps,
         num_heads=num_heads,
-        prune_head_dims=True,
+        prune_head_dims=False,
         prune_num_heads=True,
         head_pruning_ratio=lightning_module.config.pruning.pruning_ratio,
         ignored_layers=ignored_layers,
@@ -56,7 +59,7 @@ def prune_model(lightning_module: PruneModule, datamodule: SentenceDM):
     model.zero_grad()
     model.train()
 
-    for idx, (ru, en) in enumerate(tqdm(train_dataloader)):
+    for ru, en in tqdm(train_dataloader):
         inp_ru = lightning_module.tokenize(ru, device)
         inp_en = lightning_module.tokenize(en, device)
 
@@ -70,14 +73,16 @@ def prune_model(lightning_module: PruneModule, datamodule: SentenceDM):
         loss.backward()
 
     for step in range(lightning_module.config.pruning.iterative_steps):
-        for i, group in enumerate(pruner.step(interactive=True)):
+        for group in pruner.step(interactive=True):
             group.prune()
 
     for module in model.modules():
         if isinstance(module, BertSelfAttention):
+            logging.debug('Num heads: %d, head size: %d =>' % (module.num_attention_heads, module.attention_head_size))
             module.num_attention_heads = pruner.num_heads[module.query]
             module.attention_head_size = module.query.out_features // module.num_attention_heads
             module.all_head_size = module.query.out_features
+            logging.debug('Num heads: %d, head size: %d' % (module.num_attention_heads, module.attention_head_size))
 
     lightning_module.student_model = model
 
@@ -87,4 +92,5 @@ def prune_model(lightning_module: PruneModule, datamodule: SentenceDM):
     if lightning_module.config.pruning.save_model:
         model.zero_grad()
         model.to('cpu')
+        model.eval()
         torch.save(model, 'models/prune_model.pth')
