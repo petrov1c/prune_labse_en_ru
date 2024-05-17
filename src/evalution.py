@@ -24,20 +24,19 @@ def evaluate(model: torch.nn.Module, tokenizer):
     speed_task_cpu = tasks.SpeedTask()
     speed_task_gpu = tasks.SpeedTask()
 
-    model_name = model.name_or_path
     model.eval()
     model.cpu()
-    speed_task_cpu.eval(lambda x: embed_bert_both(x, model, tokenizer), model_name)
+    speed_task_cpu.eval(lambda x: embed_bert_both(x, model, tokenizer), model.name_or_path)
 
     model.cuda()
-    speed_task_gpu.eval(lambda x: embed_bert_both(x, model, tokenizer), model_name)
+    speed_task_gpu.eval(lambda x: embed_bert_both(x, model, tokenizer), model.name_or_path)
     for task in sent_tasks:
-        task.eval(lambda x: embed_bert_both(x, model, tokenizer), model_name)
+        task.eval(lambda x: embed_bert_both(x, model, tokenizer), model.name_or_path)
 
-    scores = {type(t).__name__: t.score_cache[model_name] for t in sent_tasks}
-    scores['mean_s'] = sum([scores[key] for key in scores])/len(scores)
-    scores['cpu_speed'] = speed_task_cpu.score_cache[model_name]
-    scores['gpu_speed'] = speed_task_gpu.score_cache[model_name]
+    scores = {type(t).__name__: t.score_cache[model.name_or_path] for t in sent_tasks}
+    scores['mean_s'] = sum([scores[key] for key in scores]) / len(scores)
+    scores['cpu_speed'] = speed_task_cpu.score_cache[model.name_or_path]
+    scores['gpu_speed'] = speed_task_gpu.score_cache[model.name_or_path]
 
     return scores
 
@@ -51,5 +50,5 @@ if __name__ == '__main__':
     tokenizer_for_model = AutoTokenizer.from_pretrained(config.model.name)
     test_model = torch.load('models/{0}'.format(args.model_name))
 
-    result = evaluate(test_model, tokenizer_for_model)
-    logging.info(str(result))
+    metrics = evaluate(test_model, tokenizer_for_model)
+    logging.info(str(metrics))
