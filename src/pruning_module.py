@@ -25,8 +25,8 @@ def prune_model(lightning_module: PruneModule, datamodule: SentenceDM):
         device,
     )
 
-    ops, params = tp.utils.count_ops_and_params(model, input_example)
-    logging.info(f'Model complexity: {ops / 1e6} MMAC, {params / 1e6} M params')
+    ops, model_params = tp.utils.count_ops_and_params(model, input_example)
+    logging.info(f'Model complexity: {ops / 1e6} MMAC, {model_params / 1e6} M params')
 
     ignored_layers = []
     for name, module in model.named_modules():
@@ -86,8 +86,8 @@ def prune_model(lightning_module: PruneModule, datamodule: SentenceDM):
 
     lightning_module.student_model = model
 
-    ops, params = tp.utils.count_ops_and_params(model, input_example)
-    logging.info(f'Model complexity (After taylor pruning): {ops / 1e6} MMAC, {params / 1e6} M params')
+    ops, model_params = tp.utils.count_ops_and_params(model, input_example)
+    logging.info(f'Model complexity (After taylor pruning): {ops / 1e6} MMAC, {model_params / 1e6} M params')
 
     if lightning_module.config.pruning.save_model:
         model.zero_grad()
