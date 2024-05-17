@@ -1,0 +1,45 @@
+project_name: 'prune-labse-en-ru'
+experiment_name: 'prune-labse-en-ru'
+n_epochs: 15
+accelerator: 'gpu'
+device: 0
+monitor_metric: 'val_total_loss'
+monitor_mode: 'min'
+
+model:
+  name: 'cointegrated/LaBSE-en-ru'
+
+pruning:
+  pruning_ratio: 0.5
+  global_pruning: False
+  iterative_steps: 1
+  save_model: True
+
+optimizer: 'torch.optim.AdamW'
+optimizer_kwargs:
+  lr: 3e-6
+  weight_decay: 1e-5
+
+scheduler: 'torch.optim.lr_scheduler.CosineAnnealingLR'
+scheduler_kwargs:
+  T_max: 10
+  eta_min: 1e-5
+
+losses:
+  - name: 'mse'
+    weight: 0.5
+    loss_fn: 'torch.nn.MSELoss'
+    loss_kwargs: {}
+
+  - name: 'kl'
+    weight: 0.5
+    loss_fn: 'torch.nn.KLDivLoss'
+    loss_kwargs: {'reduction': 'batchmean'}
+
+data_config:
+  debug: False
+  prepare_data: False
+  data_path: 'data/'
+  batch_size: 16
+  n_workers: 10
+  train_size: 0.98
