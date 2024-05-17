@@ -1,6 +1,7 @@
 project_name: 'prune-labse-en-ru'
 experiment_name: 'prune-labse-en-ru'
-n_epochs: 15
+tags: ['debug']
+n_epochs: 3
 accelerator: 'gpu'
 device: 0
 monitor_metric: 'val_total_loss'
@@ -37,7 +38,7 @@ losses:
     loss_kwargs: {'reduction': 'batchmean'}
 
 data_config:
-  debug: False
+  debug: True
   prepare_data: False
   data_path: 'data/'
   batch_size: 16

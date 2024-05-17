@@ -1,6 +1,7 @@
 project_name: 'prune-labse-en-ru'
 experiment_name: 'prune-labse-en-ru'
-n_epochs: 15
+tags: ['train']
+n_epochs: 20
 accelerator: 'gpu'
 device: 0
 monitor_metric: 'val_total_loss'

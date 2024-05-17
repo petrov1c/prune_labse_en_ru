@@ -34,6 +34,7 @@ class DataConfig(BaseModel):
 class Config(BaseModel):
     project_name: str
     experiment_name: str
+    tags: List[str]
     data_config: DataConfig
     n_epochs: int
     accelerator: str
