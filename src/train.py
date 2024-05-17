@@ -26,6 +26,7 @@ def train(config: Config):
     task = Task.init(
         project_name=config.project_name,
         task_name=f'{config.experiment_name}',
+        tags=config.tags,
         auto_connect_frameworks=True,
     )
     task.connect(config.model_dump())
@@ -50,6 +51,7 @@ def train(config: Config):
         accelerator=config.accelerator,
         devices=[config.device],
         log_every_n_steps=50,
+        num_sanity_val_steps=0,
         callbacks=[
             checkpoint_callback,
             EarlyStopping(monitor=config.monitor_metric, patience=4, mode=config.monitor_mode),
