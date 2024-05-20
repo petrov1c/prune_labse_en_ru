@@ -155,40 +155,50 @@ $$ \operatorname{mins}_w=\operatorname{min}\left| w\frac{\partial L}{\partial w}
 
 ## 7 Результаты []{#Results}
 
-*[что получилось в итоге, графики и т.д.]*
+По этой [ссылке](https://app.clear.ml/projects/4198751ef62241b5a317649d8357615d/experiments/048926e387ac48ccaf184f338e9d86ef/output/execution) можно ознакомиться с полным циклом эксперимента и полученными результатами. В этом разделе содержатся только некоторые данные эксперимента из ClearML (ресурса, на который дана ссылка).
 
-Здесь [https://app.clear.ml/projects/4198751ef62241b5a317649d8357615d/experiments/048926e387ac48ccaf184f338e9d86ef/output/execution]  Вы можете ознакомиться с полным циклом эксперимента и полученными результатами
-В результате мы получили сеть, которая
-в 1.5 раза меньше по количеству параметров,
-работает на 40% быстрее на CPU, имеет в два раза меньшую вычислительную сложность,
-по среднему проценту качества на всех задачах отличается от оригинальной сети менее, чем на 0.5%
-на задачах NLI и SA показывает качество выше оригинальной сети
+[]{#gpu_util}
+![Использование GPU](monitor_gpu.png)\
+\centerline{Рисунок 1: Использование GPU}
+
+![Кривая функции потерь модели](val_total_loss.png)\
+[]{#total_loss}
+\centerline{Рисунок 2: Кривая функции потерь модели}
+
+[]{#metrics_score}
+![Кривая метрик качества по бенчмарку](val_mean_s.png)\
+\centerline{Рисунок 3: Кривая метрик качества по бенчмарку}
+
+[]{#mse_loss}
+![Функция потерь на разности русских и английских предложений](train_mse_loss.png)\
+\centerline{Рисунок 4: Функция потерь на разности русских и английских предложений}
+
+*[СЮДА ТАБЛИЦУ С ОЦЕНКАМИ ФИНАЛЬНЫХ МЕТРИК (STS, PI, NLI, SA и др.)]*
 
 ## 8 Интерпретация []{#Interpretation}
 
-*[интерпретация результатов, т.е. как трактовать графики и др.]*
-Обучение проходило на видеокарте NVIDIA GeForce RTX 3090 при полной утилизации ГПУ, что показано на рис.1
-Лосс на валидации постоянно падал, даже на последней эпохе он уменьшился, что позволяет говорить о том, что можно получить 
-еще более качественную модель (рис.2)
-Качество модели, оцениваемое по бенчмарку, в процессе обучения практически постоянно росло (рис.3)
-Интересно, что одна составляющая лосса, которая отвечала за похожесть русских и английских предложений, в процессе обучения
-сошлась в ноль, но мы его все-равно оставляем в качестве регуляризатора (рис.4)
+Обучение проходило на видеокарте NVIDIA GeForce RTX 3090 при полной утилизации GPU, что показано на [рисунке 1](#gpu_util).
+Функция потерь на валидации постоянно падала, даже на последней эпохе, что позволяет предположить, что можно получить еще более качественную модель ([рисунок 2](#total_loss)).
+Качество модели, оцениваемое по бенчмарку, в процессе обучения практически постоянно росло ([рисунок 3](#metrics_score)).
+Интересно, что одна составляющая функции потерь, которая отвечала за похожесть русских и английских предложений, в процессе обучения практически сошлась в ноль, однако, она все-равно осталась в качестве регуляризатора ([рисунок 4](#mse_loss)).
+
+По итогу, была получена модель, которая в 1.5 раза меньше по количеству параметров, на 40% быстрее на CPU, имеет в два раза меньшую вычислительную сложность (на CPU и GPU суммарно), по среднему проценту качества на всех задачах отличается от оригинальной сети менее, чем на 0.5%, в то же время, на задачах `NLI` и `SA` показывает качество выше оригинальной сети, то есть наш подход показал **SotA** на полученном нами датасете.
+
+*[ССЫЛКА НА ТАБЛИЦУ С StoA]*
 
 ## 9 Заключение []{#Conclusion}
 
-*[ОБЯЗАТЕЛЬНО ДОПИСАТЬ ПРО StoA]*
-
 Результаты этой работы показывают, что можно эффективно уменьшать и ускорять модели путём прунинга с последующей дистилляцией.
-Текущий результат был получен в ограничениях как по вычислительным ресурсам (NVIDIA GeForce RTX 3090), так и по времени (несколько суток проведения экспериментов). Однако он вполне сопоставим с результатами известных работ, описанных [пункте 3](#Related).
+Текущий результат был получен в ограничениях как по вычислительным ресурсам (NVIDIA GeForce RTX 3090), так и по времени (несколько суток проведения экспериментов). Однако, он вполне сопоставим с результатами известных работ, описанных [пункте 3](#Related).
 
 Более того, ряд техник не был применен из-за ограниченности по времени. Авторы данной работы планируют продолжить этот эксперимент с целью уменьшения исходной модели, как минимум, в 10 раз, так как такой коэффициент сжатия более чем согласуется с [теорией лотерейных билетов](https://openreview.net/forum?id=rJl-b3RcF7).
 
 ## Ссылки []{#References}
 
-1. Давид Дале: Маленький и быстрый BERT для русского языка // https://habr.com/ru/articles/562064
-2. Jonathan Frankle, Karolina Dziugaite, Daniel M. Roy, Michael Carbin: Stabilizing the Lottery Ticket Hypothesis // https://arxiv.org/abs/1903.01611
-3. Jonathan Frankle, Michael Carbin: THE LOTTERY TICKET HYPOTHESIS: FINDING SPARSE, TRAINABLE NEURAL NETWORKS // https://openreview.net/forum?id=rJl-b3RcF7
-4. Matthieu Courbariaux, Itay Hubara, Daniel Soudry, Ran El-Yaniv, Yoshua Bengio: Binarized Neural Networks: Training Neural Networks with Weights and Activations Constrained to +1 or −1 // https://arxiv.org/abs/1602.02830
-6. TORSTEN HOEFLER, DAN ALISTARH, TAL BEN-NUN, NIKOLI DRYDEN, ALEXANDRA PESTE: Sparsity in Deep Learning: Pruning and growth for efficient inference and training in neural networks // https://arxiv.org/abs/2102.00554
-7. Victor SANH, Lysandre DEBUT, Julien CHAUMOND, Thomas WOLF: DistilBERT, a distilled version of BERT: smaller, faster, cheaper and lighter // https://arxiv.org/abs/1910.01108
-8. Yihui He, Ji Lin, Zhijian Liu, Hanrui Wang, Li-Jia Lil, Song Han: AMC: AutoML for Model Compression and Acceleration on Mobile Devices // https://arxiv.org/abs/1802.03494
+1. [Дале, 2021] Давид Дале (2021). Маленький и быстрый BERT для русского языка // https://habr.com/ru/articles/562064
+2. [Frankle, Carbin, 2019] Jonathan Frankle, Michael Carbin (2019). THE LOTTERY TICKET HYPOTHESIS: FINDING SPARSE, TRAINABLE NEURAL NETWORKS // https://openreview.net/forum?id=rJl-b3RcF7
+3. [Frankle, Dziugaite, Roy, Carbin, 2020] Jonathan Frankle, Karolina Dziugaite, Daniel M. Roy, Michael Carbin (2020). Stabilizing the Lottery Ticket Hypothesis // https://arxiv.org/abs/1903.01611
+4. [Courbariaux, Hubara, Soudry, El-Yaniv, Bengio, 2016] Matthieu Courbariaux, Itay Hubara, Daniel Soudry, Ran El-Yaniv, Yoshua Bengio (2016). Binarized Neural Networks: Training Neural Networks with Weights and Activations Constrained to +1 or −1 // https://arxiv.org/abs/1602.02830
+6. [HOEFLER, ALISTARH, BEN-NUN, DRYDEN, PESTE, 2021] TORSTEN HOEFLER, DAN ALISTARH, TAL BEN-NUN, NIKOLI DRYDEN, ALEXANDRA PESTE (2021). Sparsity in Deep Learning: Pruning and growth for efficient inference and training in neural networks // https://arxiv.org/abs/2102.00554
+7. [SANH, DEBUT, CHAUMOND, WOLF, 2020] Victor SANH, Lysandre DEBUT, Julien CHAUMOND, Thomas WOLF (2020). DistilBERT, a distilled version of BERT: smaller, faster, cheaper and lighter // https://arxiv.org/abs/1910.01108
+8. [He, Lin, Liu, Wang, Lil, Han, 2019] Yihui He, Ji Lin, Zhijian Liu, Hanrui Wang, Li-Jia Lil, Song Han (2019). AMC: AutoML for Model Compression and Acceleration on Mobile Devices // https://arxiv.org/abs/1802.03494
