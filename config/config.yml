@@ -1,18 +1,18 @@
 project_name: 'prune-labse-en-ru'
 experiment_name: 'prune-labse-en-ru'
 tags: ['train']
-n_epochs: 20
+n_epochs: 22
 accelerator: 'gpu'
 device: 0
-monitor_metric: 'val_total_loss'
-monitor_mode: 'min'
+monitor_metric: 'val_mean_s'
+monitor_mode: 'max'
 
 model:
   name: 'cointegrated/LaBSE-en-ru'
 
 pruning:
   pruning_ratio: 0.5
-  global_pruning: False
+  global_pruning: True
   iterative_steps: 1
   save_model: True
 
